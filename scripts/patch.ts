@@ -246,7 +246,9 @@ const configDefaults = {
   "chat.mcp.autostart": "never",
   "chat.mcp.access": "none",
   "workbench.colorTheme": "Default Dark Modern",
-  "window.autoDetectColorScheme": false,
+  "workbench.preferredDarkColorTheme": "Default Dark Modern",
+  "workbench.preferredLightColorTheme": "Default Light Modern",
+  "window.autoDetectColorScheme": true,
   "workbench.startupEditor": "none",
   "workbench.secondarySideBar.defaultVisibility": "hidden",
 };
