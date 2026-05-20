@@ -119,6 +119,26 @@ if (!code.includes(brokenHook)) {
 
 code = code.replace(brokenHook, fixedHook);
 
+// Rewrite `_VSCODE_IMPORT_VSCODE_API` to load the vscode factory synchronously
+// from the caller URL. Upstream keys it by UUID via MessageChannel round-trip
+// (`e.getKey(uuid)`), but the fixed hook above passes the caller URL directly,
+// so the UUID lookup returns undefined and extensions crash with
+// `Cannot read properties of undefined (reading 'version')`. We capture the
+// mangled names of the factory cache, assertion fn, and URI class from the
+// surrounding (now-dead) onmessage handler so the rewrite tracks minifier
+// renames across upgrades.
+const interceptorRe =
+  /value:(?<param>\w+)=>(?<mapVar>\w+)\.getKey\(\k<param>\)\}\);(?=let\{port1:\w+,port2:\w+\}=new MessageChannel,(?<factory>\w+),\w+=\w+;\w+\.onmessage=\w+=>\{\k<factory>\|\|\(\k<factory>=this\._factories\.get\("vscode"\),(?<assert>\w+)\(\k<factory>\)\);let\{id:\w+,url:\w+\}=\w+\.data,\w+=(?<uri>\w+)\.parse\()/;
+const interceptorMatch = code.match(interceptorRe);
+if (!interceptorMatch) {
+  console.error("Cannot patch — _VSCODE_IMPORT_VSCODE_API interceptor pattern not found");
+  process.exit(1);
+}
+const { param, mapVar, factory, assert: assertFn, uri } = interceptorMatch.groups!;
+const interceptorOld = `value:${param}=>${mapVar}.getKey(${param})`;
+const interceptorNew = `value:${param}=>{${factory}||(${factory}=this._factories.get("vscode"),${assertFn}(${factory}));return ${factory}.load("_not_used",${uri}.parse(${param}),()=>{throw new Error("CANNOT LOAD MODULE from here.")})}`;
+code = code.replace(interceptorOld, interceptorNew);
+
 // Remove MessageChannel + transferList registration (fixed hook doesn't need a port)
 code = code.replace(
   /register\(r\._createDataUri\(r\._loaderScript\),\{parentURL:import\.meta\.url,data:\{port:i\},transferList:\[i\]\}\)/,
