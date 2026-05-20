@@ -182,15 +182,14 @@ for (const rel of platformSwitchFiles) {
 }
 
 // Step 2c: Neuter the bundled Copilot Chat ("Build with Agent") wiring in
-// product.json and bake in dark-theme + chat-disabled defaults.
+// product.json.
 //
 // The Copilot Chat extension files themselves are already stripped from the
 // shipped tarball in `scripts/pack.ts`, but VS Code core still ships the chat
 // UI (Chat view container, agent picker, "Build with Agent" heading) and
 // reads `defaultChatAgent` / `builtInExtensionsEnabledWithAutoUpdates` from
-// product.json to drive the onboarding flow. We remove those references and
-// set `chat.disableAIFeatures: true` as the master kill switch so the chat
-// UI stays inert by default.
+// product.json to drive the onboarding flow. We remove those references so
+// the bundled chat UI has nothing to wire up.
 //
 // String-level edits (not JSON.stringify) to keep the diff minimal — product.json
 // uses a custom mixed compact/pretty layout that JSON.stringify would normalize.
@@ -214,10 +213,20 @@ productSrc = productSrc.replace(
   '"builtInExtensionsEnabledWithAutoUpdates": []',
 );
 
-// 4. Inject `configurationDefaults` (chat-disabled + dark theme) before the
-//    final closing brace. The trailing object in product.json varies between
-//    versions, so anchor on the document-final `}\n` and prepend a comma to
-//    the preceding line.
+writeFileSync(productJsonPath, productSrc);
+console.log("Patched product.json (chat agent/copilot wiring removed)");
+
+// Step 2d: Inject default settings into the workbench config sent to the browser.
+//
+// We can't use product.json's `configurationDefaults` key — VS Code only reads
+// `configurationDefaults` from extension `contributes` and from workbench
+// `options.configurationDefaults`. The browser-side bootstrap registers them via
+// `configurationRegistry.registerDefaultConfigurations([{overrides: options.configurationDefaults}])`.
+//
+// `server-main.js` builds the workbench options object `U` and serializes it
+// into the `WORKBENCH_WEB_CONFIGURATION` meta tag. We inject `configurationDefaults`
+// as the first key of `U` so the browser workbench applies the defaults.
+//
 // Both `chat.disableAIFeatures` AND `workbench.disableAICustomizations` must
 // be true to fully hide the chat setup UI (e.g. the "Sign in to use AI
 // Features" button in the Accounts menu / status bar). See `Gnn` in
@@ -238,15 +247,23 @@ const configDefaults = {
   "chat.mcp.access": "none",
   "workbench.colorTheme": "Default Dark Modern",
   "window.autoDetectColorScheme": false,
+  "workbench.startupEditor": "none",
+  "workbench.secondarySideBar.defaultVisibility": "hidden",
 };
-const configBlock =
-  '  "configurationDefaults": ' +
-  JSON.stringify(configDefaults, null, 2).replace(/\n/g, "\n  ") +
-  "\n";
-productSrc = productSrc.replace(/\n}\s*$/, `,\n${configBlock}}\n`);
 
-writeFileSync(productJsonPath, productSrc);
-console.log("Patched product.json (chat disabled, dark theme default)");
+const serverMainPath = `${patchDir}/lib/vscode/out/server-main.js`;
+let serverMain = readFileSync(serverMainPath, "utf8");
+const uPrefix = "let U={remoteAuthority:p,serverBasePath:a,";
+if (!serverMain.includes(uPrefix)) {
+  console.error("Cannot patch server-main.js — workbench config object pattern not found");
+  process.exit(1);
+}
+serverMain = serverMain.replace(
+  uPrefix,
+  `let U={configurationDefaults:${JSON.stringify(configDefaults)},${uPrefix.slice("let U={".length)}`,
+);
+writeFileSync(serverMainPath, serverMain);
+console.log("Patched server-main.js (configurationDefaults injected into workbench options)");
 
 // Step 3: Commit the patch
 execSync(`pnpm patch-commit '${patchDir}'`, {
