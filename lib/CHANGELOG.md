@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.0.28
+
+[compare changes](https://github.com/pithings/coderaft/compare/v0.0.27...v0.0.28)
+
+### 🚀 Enhancements
+
+- Disable vscode ai features by default ([629e77d](https://github.com/pithings/coderaft/commit/629e77d))
+
+### ❤️ Contributors
+
+- Pooya Parsa ([@pi0](https://github.com/pi0))
+
 ## v0.0.27
 
 [compare changes](https://github.com/pithings/coderaft/compare/v0.0.26...v0.0.27)
