@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.0.29
+
+[compare changes](https://github.com/pithings/coderaft/compare/v0.0.28...v0.0.29)
+
+### 🩹 Fixes
+
+- Properly disable ai features by default ([0b13e43](https://github.com/pithings/coderaft/commit/0b13e43))
+
+### ❤️ Contributors
+
+- Pooya Parsa ([@pi0](https://github.com/pi0))
+
 ## v0.0.28
 
 [compare changes](https://github.com/pithings/coderaft/compare/v0.0.27...v0.0.28)
