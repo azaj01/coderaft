@@ -117,6 +117,14 @@ export async function createCodeServer(
   // …)` call below is the only server.
   process.env.CODE_SERVER_PARENT_PID ??= String(process.pid);
 
+  // Point shipped wrapper scripts (`bin/helpers/browser.sh`,
+  // `bin/remote-cli/code-server`) at the host node — coderaft's extracted tree
+  // has no `lib/node` binary, only `process.execPath`. VS Code injects
+  // `BROWSER=.../browser.sh` and prepends `remote-cli/` to PATH for terminals
+  // and extension hosts, so those processes inherit this var and the scripts
+  // resolve `${NODE_EXEC_PATH:-$ROOT/lib/node}` to a real node.
+  process.env.NODE_EXEC_PATH ??= process.execPath;
+
   const userDataDir =
     opts.vscode?.["user-data-dir"] ?? join(_os.homedir(), ".vscode-server-oss", "data");
 
