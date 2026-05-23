@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.0.31
+
+[compare changes](https://github.com/pithings/coderaft/compare/v0.0.30...v0.0.31)
+
+### 🩹 Fixes
+
+- Correct `NODE_EXEC_PATH` ([0f5c6f4](https://github.com/pithings/coderaft/commit/0f5c6f4))
+
+### ❤️ Contributors
+
+- Pooya Parsa ([@pi0](https://github.com/pi0))
+
 ## v0.0.30
 
 [compare changes](https://github.com/pithings/coderaft/compare/v0.0.29...v0.0.30)
