@@ -1,5 +1,8 @@
 packages:
   - "lib"
   - "shims/*"
+allowBuilds:
+  argon2: false
+  code-server: false
 patchedDependencies:
   code-server: patches/code-server.patch
