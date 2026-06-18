@@ -65,6 +65,7 @@ async function startMain() {
     proxyURI: values["proxy-uri"],
     defaultFolder: dir || values["default-folder"],
     connectionToken: values["connection-token"] ?? values.token,
+    extensions: values["install-extension"],
     vscode,
   };
 

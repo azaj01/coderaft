@@ -52,6 +52,7 @@ export const cliOptions = {
 
   // Features
   "enable-sync": { type: "boolean" },
+  "install-extension": { type: "string", multiple: true },
   "disable-extensions": { type: "boolean" },
   "disable-extension": { type: "string", multiple: true },
   "enable-proposed-api": { type: "string", multiple: true },
@@ -190,6 +191,7 @@ export const helpText = `
 
   Features:
         --enable-sync                    Enable settings sync
+        --install-extension <ext-id>     Preinstall an extension from Open VSX before start (repeatable)
         --disable-extensions             Disable all installed extensions
         --disable-extension <ext-id>     Disable specific extension (repeatable)
         --enable-proposed-api <ext-id>   Enable proposed API for extension (repeatable)

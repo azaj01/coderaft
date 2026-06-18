@@ -12,6 +12,7 @@
     "tar.mjs",
     "code.mjs",
     "worker.mjs",
+    "install.mjs",
     "android-preload.cjs",
     "code.tar.zst"
   ],
@@ -23,6 +24,7 @@
   "imports": {
     "#code": "./code.mjs",
     "#worker": "./worker.mjs",
+    "#install": "./install.mjs",
     "#android-preload": "./android-preload.cjs"
   },
   "scripts": {

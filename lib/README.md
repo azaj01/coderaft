@@ -102,6 +102,7 @@ Creates a code-server handler without binding to a port.
 | `host`            | `string`              | Host/interface to bind. Used to infer whether to require a token.            |
 | `baseURL`         | `string`              | Base URL the server is mounted under (e.g. `/code`). Defaults to `/`.        |
 | `proxyURI`        | `string`              | Proxy URI template for forwarded ports (see [Port Proxy](#port-proxy)).      |
+| `extensions`      | `string[]`            | Extensions to preinstall before start (see [Extensions](#extensions)).       |
 | `vscode`          | `VSCodeServerOptions` | Extra options forwarded to VS Code's internal `createServer()`.              |
 
 Returns a `CodeServerHandler`:
@@ -164,6 +165,36 @@ await instance.close();
 ```
 
 Options cross an IPC boundary, so nested values (`vscode`, etc.) must be JSON-compatible.
+
+## Extensions
+
+Preinstall extensions when an instance starts by passing an `extensions` array. Ids resolve from the [Open VSX](https://open-vsx.org) registry by default — the same gallery the in-editor Extensions view uses.
+
+```ts
+import { startCodeServer } from "coderaft";
+
+const instance = await startCodeServer({
+  defaultFolder: "/path/to/workspace",
+  extensions: [
+    "esbenp.prettier-vscode", // gallery id
+    "dbaeumer.vscode-eslint@3.0.24", // pin a version
+    "/abs/path/to/local.vsix", // local .vsix file
+  ],
+});
+```
+
+Works with `createCodeServer`, `startCodeServer`, and `spawnCodeServer`, and on the CLI:
+
+```sh
+coderaft --install-extension esbenp.prettier-vscode --install-extension dbaeumer.vscode-eslint
+```
+
+- **Idempotent** — already-installed extensions are skipped, so warm restarts pay no cost. Installs run only when something is missing.
+- **Non-blocking on failure** — a bad id or a gallery outage is logged as a warning; the server still starts.
+- Installs into the server's extensions dir (`--extensions-dir`, default `~/.vscode-server-oss/extensions`), so they persist across restarts.
+
+> [!NOTE]
+> Installation runs in a short-lived child process before the server boots (VS Code's extension CLI calls `process.exit()` when done). The first cold start with new extensions takes ~1s longer per extension; subsequent starts are instant.
 
 ## CLI Options
 
@@ -244,12 +275,13 @@ Options cross an IPC boundary, so nested values (`vscode`, etc.) must be JSON-co
 
 ### Features
 
-| Option                               | Description                                       |
-| ------------------------------------ | ------------------------------------------------- |
-| `--enable-sync`                      | Enable settings sync                              |
-| `--enable-proposed-api <ext-id>`     | Enable proposed API for an extension (repeatable) |
-| `--disable-workspace-trust`          | Disable workspace trust                           |
-| `--disable-getting-started-override` | Disable getting started override                  |
+| Option                               | Description                                                                       |
+| ------------------------------------ | --------------------------------------------------------------------------------- |
+| `--enable-sync`                      | Enable settings sync                                                              |
+| `--install-extension <ext-id>`       | Preinstall an extension from Open VSX (repeatable, see [Extensions](#extensions)) |
+| `--enable-proposed-api <ext-id>`     | Enable proposed API for an extension (repeatable)                                 |
+| `--disable-workspace-trust`          | Disable workspace trust                                                           |
+| `--disable-getting-started-override` | Disable getting started override                                                  |
 
 ### Remote
 

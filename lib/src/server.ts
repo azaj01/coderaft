@@ -6,6 +6,7 @@ import { join } from "node:path";
 import type { Duplex } from "node:stream";
 import { pathToFileURL } from "node:url";
 import { createProxyServer } from "httpxy";
+import { ensureExtensions } from "./extensions.ts";
 import { serveStatic } from "./static.ts";
 import type { VSCodeServerOptions } from "./types.ts";
 import { loadCode } from "#code";
@@ -68,6 +69,18 @@ export interface CreateCodeServerOptions {
    * Passed to VS Code as `VSCODE_PROXY_URI`.
    */
   proxyURI?: string;
+  /**
+   * Extensions to preinstall before the server boots. Each entry is anything
+   * VS Code's CLI accepts: a gallery id (`esbenp.prettier-vscode`), an id pinned
+   * to a version (`esbenp.prettier-vscode@12.4.0`), or a path to a local
+   * `.vsix`. Gallery ids resolve from Open VSX (https://open-vsx.org) by
+   * default.
+   *
+   * Installation is idempotent — already-installed extensions are skipped, so
+   * warm restarts pay no cost. Failures (bad id, gallery outage) are logged and
+   * never block startup.
+   */
+  extensions?: string[];
   /** Extra options forwarded to VS Code's `createServer()`. */
   vscode?: VSCodeServerOptions;
 }
@@ -145,8 +158,12 @@ export async function createCodeServer(
     process.env.VSCODE_PROXY_URI ??= `${baseURL}/proxy/{{port}}/`;
   }
 
-  const userDataDir =
-    opts.vscode?.["user-data-dir"] ?? join(_os.homedir(), ".vscode-server-oss", "data");
+  // Mirror VS Code's OSS server defaults (`~/.vscode-server-oss/{,data,extensions}`)
+  // so lock cleanup and extension preinstall target the same dirs the server reads.
+  const serverDataDir =
+    opts.vscode?.["server-data-dir"] ?? join(_os.homedir(), ".vscode-server-oss");
+  const userDataDir = opts.vscode?.["user-data-dir"] ?? join(serverDataDir, "data");
+  const extensionsDir = opts.vscode?.["extensions-dir"] ?? join(serverDataDir, "extensions");
 
   // Remove stale workspace storage lock files left behind by ungraceful exits
   cleanupStaleLocks(userDataDir);
@@ -154,6 +171,12 @@ export async function createCodeServer(
   watchChildProcessHealth();
 
   const { modulesDir } = await loadCode();
+
+  // Preinstall requested extensions (from Open VSX by default) before the
+  // extension host starts. Idempotent and best-effort — see ensureExtensions.
+  if (opts.extensions?.length) {
+    await ensureExtensions(opts.extensions, { extensionsDir, userDataDir, serverDataDir });
+  }
   const vsRootPath = join(modulesDir, "code-server", "lib", "vscode");
 
   // Load VS Code server module — mute noisy internal logs during init
@@ -177,6 +200,9 @@ export async function createCodeServer(
   const serverModule = await mod.loadCodeWithNls();
   const vscodeServer = await serverModule.createServer(null, {
     "default-folder": defaultFolder,
+    // Pin the extensions dir so the server reads from exactly where preinstall
+    // wrote. Equals VS Code's own default; `opts.vscode` can still override it.
+    "extensions-dir": extensionsDir,
     ...(baseURL ? { "server-base-path": baseURL } : {}),
     ...(withoutToken
       ? { "without-connection-token": true }
