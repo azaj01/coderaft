@@ -19,13 +19,13 @@
     "typecheck": "tsgo --noEmit --skipLibCheck"
   },
   "devDependencies": {
-    "@types/node": "^25.9.1",
+    "@types/node": "^26.0.1",
     "@typescript/native-preview": "latest",
     "changelogen": "^0.6.2",
-    "obuild": "^0.4.35",
-    "oxfmt": "^0.55.0",
-    "oxlint": "^1.66.0",
-    "vitest": "^4.1.7"
+    "obuild": "^0.4.37",
+    "oxfmt": "^0.56.0",
+    "oxlint": "^1.71.0",
+    "vitest": "^4.1.9"
   },
   "overrides": {
     "@github/copilot": "workspace:*",
