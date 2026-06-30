@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.0.34
+
+[compare changes](https://github.com/pithings/coderaft/compare/v0.0.33...v0.0.34)
+
+### 🔥 Performance
+
+- Bound watcher and tsserver memory with config defaults ([c1da7f2](https://github.com/pithings/coderaft/commit/c1da7f2))
+
+### 🩹 Fixes
+
+- **patch:** Guard MessageChannel removal against minifier renames ([0201cb5](https://github.com/pithings/coderaft/commit/0201cb5))
+
+### ❤️ Contributors
+
+- Pooya Parsa ([@pi0](https://github.com/pi0))
+
 ## v0.0.33
 
 [compare changes](https://github.com/pithings/coderaft/compare/v0.0.32...v0.0.33)
