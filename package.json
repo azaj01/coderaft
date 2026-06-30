@@ -15,7 +15,7 @@
     "release": "cd lib && pnpm changelogen --push --release",
     "lint": "oxlint . && oxfmt --check .",
     "prepack": "pnpm build",
-    "test": "pnpm lint && pnpm typecheck",
+    "test": "pnpm lint && pnpm typecheck && vitest run",
     "typecheck": "tsgo --noEmit --skipLibCheck"
   },
   "devDependencies": {

@@ -139,10 +139,19 @@ const interceptorOld = `value:${param}=>${mapVar}.getKey(${param})`;
 const interceptorNew = `value:${param}=>{${factory}||(${factory}=this._factories.get("vscode"),${assertFn}(${factory}));return ${factory}.load("_not_used",${uri}.parse(${param}),()=>{throw new Error("CANNOT LOAD MODULE from here.")})}`;
 code = code.replace(interceptorOld, interceptorNew);
 
-// Remove MessageChannel + transferList registration (fixed hook doesn't need a port)
+// Remove MessageChannel + transferList registration (fixed hook doesn't need a port).
+// The holder var and the port var are minifier-renamed (and get swapped across
+// builds), so backreference them rather than hardcoding names. Guard like the
+// other steps — a non-matching `replace` is a silent no-op otherwise.
+const registerRe =
+  /register\((\w+)\._createDataUri\(\1\._loaderScript\),\{parentURL:import\.meta\.url,data:\{port:(\w+)\},transferList:\[\2\]\}\)/;
+if (!registerRe.test(code)) {
+  console.error("Cannot patch — MessageChannel register pattern not found");
+  process.exit(1);
+}
 code = code.replace(
-  /register\(r\._createDataUri\(r\._loaderScript\),\{parentURL:import\.meta\.url,data:\{port:i\},transferList:\[i\]\}\)/,
-  "register(r._createDataUri(r._loaderScript),{parentURL:import.meta.url})",
+  registerRe,
+  "register($1._createDataUri($1._loaderScript),{parentURL:import.meta.url})",
 );
 
 writeFileSync(extHostPath, code);
