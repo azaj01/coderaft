@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.0.35
+
+[compare changes](https://github.com/pithings/coderaft/compare/v0.0.34...v0.0.35)
+
+### 💅 Refactors
+
+- Fix bundle size regression ([5c2cb28](https://github.com/pithings/coderaft/commit/5c2cb28))
+
+### 🏡 Chore
+
+- Fix lock ([36735a9](https://github.com/pithings/coderaft/commit/36735a9))
+
+### ❤️ Contributors
+
+- Pooya Parsa ([@pi0](https://github.com/pi0))
+
 ## v0.0.34
 
 [compare changes](https://github.com/pithings/coderaft/compare/v0.0.33...v0.0.34)
