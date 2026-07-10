@@ -23,8 +23,8 @@
     "@typescript/native-preview": "latest",
     "changelogen": "^0.6.2",
     "obuild": "^0.4.37",
-    "oxfmt": "^0.56.0",
-    "oxlint": "^1.71.0",
+    "oxfmt": ">=0.56.0",
+    "oxlint": ">=1.71.0",
     "vitest": "^4.1.9"
   },
   "overrides": {

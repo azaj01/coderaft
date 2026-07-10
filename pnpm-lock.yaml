@@ -21,10 +21,10 @@ importers:
         specifier: ^0.4.37
         version: 0.4.37(@typescript/native-preview@7.0.0-dev.20260707.2)(chokidar@5.0.0)(dotenv@17.4.2)(giget@3.3.0)(jiti@2.7.0)(typescript@6.0.3)
       oxfmt:
-        specifier: ^0.56.0
+        specifier: '>=0.56.0'
         version: 0.56.0
       oxlint:
-        specifier: ^1.71.0
+        specifier: '>=1.71.0'
         version: 1.73.0
       vitest:
         specifier: ^4.1.9
