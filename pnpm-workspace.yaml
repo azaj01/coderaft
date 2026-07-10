@@ -4,5 +4,5 @@ packages:
 allowBuilds:
   argon2: false
   code-server: false
-patchedDependencies:
-  code-server: patches/code-server.patch
+# patchedDependencies:
+#   code-server: patches/code-server.patch

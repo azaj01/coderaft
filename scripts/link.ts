@@ -10,6 +10,7 @@ import {
   symlinkSync,
   rmSync,
 } from "node:fs";
+import { applyCodeServerPatch } from "./apply-patch.ts";
 
 const rootDir = join(import.meta.dirname!, "..");
 const workspacePkgDir = join(rootDir, "lib");
@@ -152,6 +153,14 @@ function resolveDepFrom(fromPkgRealPath: string, depName: string): string | null
     }
     current = parent;
   }
+}
+
+// Apply patches/code-server.patch to the installed tree. pnpm can't patch a
+// GitHub-tarball dep, so we do it here at postinstall time (idempotent).
+const patchFile = join(rootDir, "patches/code-server.patch");
+if (existsSync(patchFile)) {
+  const status = applyCodeServerPatch(realpathSync(codeServerDir), patchFile);
+  console.log(`code-server.patch: ${status}`);
 }
 
 // Copy code-server's ThirdPartyNotices.txt into the workspace package

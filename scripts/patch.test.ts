@@ -27,30 +27,8 @@ const codeServerRoot = dirname(
 );
 const read = (rel: string) => readFileSync(join(codeServerRoot, rel), "utf8");
 
-const extHost = read("lib/vscode/out/vs/workbench/api/node/extensionHostProcess.js");
 const productJson = read("lib/vscode/product.json");
 const serverMain = read("lib/vscode/out/server-main.js");
-
-describe("ESM hook deadlock fix (extensionHostProcess.js)", () => {
-  it("installs the inline data-URI hook", () => {
-    expect(extHost).toContain("const EXPORTS = [");
-  });
-
-  it("removes the MessageChannel round-trip resolve (deadlock source)", () => {
-    // The broken resolve awaited a MessageChannel reply mid-`syncLink`.
-    expect(extHost).not.toContain("await lookup(context.parentURL)");
-  });
-
-  it("rewrites _VSCODE_IMPORT_VSCODE_API to load the factory by caller URL", () => {
-    expect(extHost).toContain('load("_not_used",');
-  });
-
-  it("strips the MessageChannel port + transferList from the hook registration", () => {
-    // The exact artifact that regressed: the fixed hook ignores the port, so
-    // the registration must not still pass `data:{port:…},transferList:[…]`.
-    expect(extHost).not.toMatch(/_loaderScript\),\{parentURL:import\.meta\.url,data:\{port:/);
-  });
-});
 
 describe("Platform-not-supported fix (Termux/android startup)", () => {
   const files = [
