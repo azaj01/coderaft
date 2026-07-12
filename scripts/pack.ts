@@ -31,6 +31,17 @@ const excludeDirPaths = new Set([
   // chat-webview half is dead weight anyway since we strip the copilot extension.
   // (Renamed from `mermaid-chat-features` in code-server 4.127.)
   "code-server/lib/vscode/extensions/mermaid-markdown-features",
+  // @microsoft/mxc-sdk native binaries — ~47 MB of execution-container helpers
+  // (Windows wxc/wslcsdk .exe/.dll, macOS mxc-exec-mac, Linux lxc-exec, SPDX
+  // SBOM manifests) for each of x64/arm64. New transitive dep pulled in by the
+  // experimental @vscode/sandbox-runtime / agent-host in code-server 4.127; it
+  // pushed the archive past the size limit. The Windows binaries can never run
+  // on a *nix code-server host, and the agent sandbox itself is unreachable in
+  // coderaft (the copilot extension that drives it is stripped above). The SDK
+  // resolves these lazily and degrades gracefully when they are absent.
+  // Linked into two locations (top-level dep + vendored under vscode).
+  "@microsoft/mxc-sdk/bin",
+  "code-server/lib/vscode/node_modules/@microsoft/mxc-sdk/bin",
 ]);
 const excludeFilePaths = new Set([
   "@vscode/tree-sitter-wasm/wasm/tree-sitter-c-sharp.wasm",
@@ -48,6 +59,8 @@ const tarExcludes = [
   "node_modules/katex/src",
   "node_modules/code-server/lib/vscode/extensions/copilot",
   "node_modules/code-server/lib/vscode/extensions/mermaid-markdown-features",
+  "node_modules/@microsoft/mxc-sdk/bin",
+  "node_modules/code-server/lib/vscode/node_modules/@microsoft/mxc-sdk/bin",
   "node_modules/@vscode/tree-sitter-wasm/wasm/tree-sitter-c-sharp.wasm",
   "node_modules/@vscode/tree-sitter-wasm/wasm/tree-sitter-ruby.wasm",
   "node_modules/code-server/lib/vscode/extensions/microsoft-authentication/dist/libmsalruntime.so",
