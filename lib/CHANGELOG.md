@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.0.36
+
+[compare changes](https://github.com/pithings/coderaft/compare/v0.0.35...v0.0.36)
+
+### 🩹 Fixes
+
+- Also shim `@vscode/ripgrep-universal` ([6cf7123](https://github.com/pithings/coderaft/commit/6cf7123))
+
+### 📦 Build
+
+- Exclude `@microsoft/mxc-sdk/bin` ([3f69a50](https://github.com/pithings/coderaft/commit/3f69a50))
+
+### 🏡 Chore
+
+- Update deps ([86fb5ec](https://github.com/pithings/coderaft/commit/86fb5ec))
+- Update code server to 4.128 ([7021865](https://github.com/pithings/coderaft/commit/7021865))
+
+### ❤️ Contributors
+
+- Pooya Parsa ([@pi0](https://github.com/pi0))
+
 ## v0.0.35
 
 [compare changes](https://github.com/pithings/coderaft/compare/v0.0.34...v0.0.35)
