@@ -65,6 +65,9 @@ importers:
       '@vscode/ripgrep':
         specifier: workspace:*
         version: link:../shims/vscode-ripgrep
+      '@vscode/ripgrep-universal':
+        specifier: workspace:*
+        version: link:../shims/vscode-ripgrep-universal
       '@vscode/spdlog':
         specifier: workspace:*
         version: link:../shims/spdlog
@@ -206,6 +209,12 @@ importers:
   shims/vscode-proxy-agent: {}
 
   shims/vscode-ripgrep:
+    dependencies:
+      ripgrep:
+        specifier: ^0.3.1
+        version: 0.3.1
+
+  shims/vscode-ripgrep-universal:
     dependencies:
       ripgrep:
         specifier: ^0.3.1

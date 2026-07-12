@@ -43,6 +43,7 @@
     "@vscode/native-watchdog": "workspace:*",
     "@vscode/proxy-agent": "workspace:*",
     "@vscode/ripgrep": "workspace:*",
+    "@vscode/ripgrep-universal": "workspace:*",
     "@vscode/spdlog": "workspace:*",
     "@vscode/sqlite3": "workspace:*",
     "@vscode/tree-sitter-wasm": "^0.3.1",

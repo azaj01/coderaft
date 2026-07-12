@@ -1,0 +1,9 @@
+{
+  "name": "@vscode/ripgrep-universal",
+  "version": "1.18.0",
+  "private": true,
+  "main": "./index.js",
+  "dependencies": {
+    "ripgrep": "^0.3.1"
+  }
+}
