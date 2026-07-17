@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.0.37
+
+[compare changes](https://github.com/pithings/coderaft/compare/v0.0.36...v0.0.37)
+
+### 🏡 Chore
+
+- Update code-server to 4.129.0 ([5389b10](https://github.com/pithings/coderaft/commit/5389b10))
+
+### ❤️ Contributors
+
+- Pooya Parsa ([@pi0](https://github.com/pi0))
+
 ## v0.0.36
 
 [compare changes](https://github.com/pithings/coderaft/compare/v0.0.35...v0.0.36)
