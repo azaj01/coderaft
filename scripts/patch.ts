@@ -171,6 +171,10 @@ function patchServerMain(code: string): string {
     "window.autoDetectColorScheme": true,
     "workbench.startupEditor": "none",
     "workbench.secondarySideBar.defaultVisibility": "hidden",
+    // Opt into the reworked workbench chrome (compact activity bar, floating
+    // panels, thinner scrollbars). Registered in 4.129 with default `false` and
+    // an `experiment: { mode: "auto" }` tag, so it stays off unless set.
+    "workbench.experimental.modernUI": true,
     // File watcher exclusions. The bundled VS Code only excludes git/hg metadata
     // by default (no node_modules), so each window's recursive watcher indexes
     // heavy dirs into a multi-GB JS-heap tree. `files.watcherExclude` is a merged
